@@ -26,6 +26,12 @@ export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto>
     });
   }
 
+  getByEmail(email: string): Promise<User> {
+    return this._repo.findFirst({
+      where: { email }
+    });
+  }
+
   create(body: CreateUserDto): Promise<User> {
     return this._repo.create({
       data: body
