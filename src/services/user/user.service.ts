@@ -19,21 +19,29 @@ export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto>
   findAll(): Promise<User[]> {
     return this._repo.findMany();
   }
+
   getById(id: number): Promise<User> {
     return this._repo.findFirst({
-      where: { id: Number(id) }
+      where: { id }
     });
   }
+
   create(body: CreateUserDto): Promise<User> {
     return this._repo.create({
       data: body
     });
   }
+
   update(id: number, body: UpdateUserDto): Promise<User> {
     return this._repo.update({
-      where: { id: Number(id) },
+      where: { id },
       data: body
     });
   }
 
+  delete(id: number): Promise<User> {
+    return this._repo.delete({
+      where: { id }
+    });
+  }
 }
