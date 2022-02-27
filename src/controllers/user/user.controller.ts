@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards} from '@nestjs/common';
 import { BaseController } from '../base.controller';
 
 import { User } from '@prisma/client';
@@ -6,6 +6,7 @@ import { User } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from '../../services/user/user.service';
+import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 
 @Controller('user')
 export class UserController extends BaseController<User, UserService, CreateUserDto, UpdateUserDto> {
@@ -16,11 +17,13 @@ export class UserController extends BaseController<User, UserService, CreateUser
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   getAll(): Promise<User[]> {
     return this._service.findAll();
   }
 
   @Get(":id")
+  @UseGuards(JwtAuthGuard)
   async getById(
     @Param("id", ParseIntPipe)
     id: number
@@ -34,6 +37,7 @@ export class UserController extends BaseController<User, UserService, CreateUser
   }
 
   @Patch(":id")
+  @UseGuards(JwtAuthGuard)
   async update(
     @Param("id", ParseIntPipe)
     id: number,
@@ -44,6 +48,7 @@ export class UserController extends BaseController<User, UserService, CreateUser
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard)
   delete(@Param("id", ParseIntPipe) id: number): Promise<User> {
     return this._service.delete(id);
   }

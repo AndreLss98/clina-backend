@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 
@@ -18,8 +18,8 @@ export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto>
       if (params.action == 'create')
         params.args.data.password = await hash(params.args.data.password, 10)
       
-      return next(params)
-    })
+      return await next(params);
+    });
 
     this._repo = prisma.user;
   }
@@ -29,7 +29,7 @@ export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto>
   }
 
   getById(id: number): Promise<User> {
-    return this._repo.findFirst({
+    return this._repo.findUnique({
       where: { id }
     });
   }
