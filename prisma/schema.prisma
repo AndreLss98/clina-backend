@@ -38,7 +38,7 @@ model Address {
   city String
   state String
   cep String
-  room Room @relation(fields: [roomId], references: [id])
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
   roomId Int
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())

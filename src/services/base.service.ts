@@ -2,6 +2,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from './../database/prisma/prisma.service';
 
 export abstract class BaseService<Entity, CreateDto, UpdateDto> {
+  public _repo;
   constructor(
     protected prisma: PrismaService
   ) {
@@ -12,9 +13,29 @@ export abstract class BaseService<Entity, CreateDto, UpdateDto> {
     });
   }
 
-  abstract findAll(): Promise<Entity[]>;
-  abstract getById(id: number): Promise<Entity>;
-  abstract create(body: CreateDto): Promise<Entity>;
-  abstract update(id: number, body: UpdateDto): Promise<Entity>;
-  abstract delete(id: number): Promise<Entity>;
+  findAll(): Promise<Entity[]> {
+    return this._repo.findMany();
+  };
+
+  getById(id: number): Promise<Entity> {
+    return this._repo.findUnique({
+      where: { id }
+    });
+  };
+  create(body: CreateDto): Promise<Entity> {
+    return this._repo.create({  
+      data: body
+    });
+  }
+  update(id: number, body: UpdateDto): Promise<Entity> {
+    return this._repo.update({
+      where: { id },
+      data: body
+    });
+  }
+  delete(id: number): Promise<Entity> {
+    return this._repo.delete({
+      where: { id }
+    });
+  }
 }

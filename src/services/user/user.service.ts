@@ -1,5 +1,5 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { User, PrismaClient } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { hash } from 'bcrypt';
 
 import { CreateUserDto } from '../../controllers/user/dto/create-user.dto';
@@ -9,7 +9,6 @@ import { BaseService } from '../base.service';
 
 @Injectable()
 export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto> {
-  private readonly _repo: PrismaClient['user'];
   constructor(
     protected prisma: PrismaService
   ) {
@@ -24,38 +23,9 @@ export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto>
     this._repo = prisma.user;
   }
 
-  findAll(): Promise<User[]> {
-    return this._repo.findMany();
-  }
-
-  getById(id: number): Promise<User> {
-    return this._repo.findUnique({
-      where: { id }
-    });
-  }
-
   getByEmail(email: string): Promise<User> {
     return this._repo.findFirst({
       where: { email }
-    });
-  }
-
-  create(body: CreateUserDto): Promise<User> {
-    return this._repo.create({  
-      data: body
-    });
-  }
-
-  update(id: number, body: UpdateUserDto): Promise<User> {
-    return this._repo.update({
-      where: { id },
-      data: body
-    });
-  }
-
-  delete(id: number): Promise<User> {
-    return this._repo.delete({
-      where: { id }
     });
   }
 }
