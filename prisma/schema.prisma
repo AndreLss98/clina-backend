@@ -27,6 +27,7 @@ model Room {
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())
   address Address?
+  photos RoomPhoto[]
 }
 
 model Address {
@@ -38,6 +39,15 @@ model Address {
   city String
   state String
   cep String
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId Int
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now())
+}
+
+model RoomPhoto {
+  id Int @id @default(autoincrement())
+  url String
   room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
   roomId Int
   createdAt DateTime? @default(now())

@@ -4,10 +4,13 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  ValidateNested
+  ValidateNested,
+  IsUrl,
+  IsArray,
+  ArrayMinSize
 } from "class-validator";
 
-export class CreateAddressDto {
+class CreateAddressDto {
   
   @IsNotEmpty()
   @IsString()
@@ -37,6 +40,13 @@ export class CreateAddressDto {
   cep: string;
 }
 
+class CreateRoomPhoto {
+
+  @IsNotEmpty()
+  @IsUrl()
+  url: string;
+}
+
 export class CreateRoomDto {
   
   @IsNotEmpty()
@@ -51,4 +61,11 @@ export class CreateRoomDto {
   @IsOptional()
   @Type(() => CreateAddressDto)
   address?: CreateAddressDto;
+
+  @ValidateNested({ each: true })
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(1)
+  @Type(() => CreateRoomPhoto)
+  photos: CreateRoomPhoto[];
 }

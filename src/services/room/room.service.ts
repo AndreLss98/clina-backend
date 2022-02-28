@@ -20,26 +20,30 @@ export class RoomService extends BaseService<Room, CreateRoomDto, UpdateRoomDto>
     return this._repo.findUnique({
       where: { id },
       include: {
-        address: true
+        address: true,
+        photos: true
       }
     });
   };
 
   create(body: CreateRoomDto): Promise<Room> {
-    const { address, ...room } = body;
-    
+    const { address, photos, ...room } = body;
+    console.log(photos)
     return this._repo.create({  
       data: {
         ...room,
         address: {
           create: address
+        },
+        photos: {
+          create: photos
         }
       }
     });
   }
 
   update(id: number, body: UpdateRoomDto): Promise<Room> {
-    const { address, ...room } = body;
+    const { address, photos, ...room } = body;
 
     return this._repo.update({
       where: { id },
@@ -47,7 +51,8 @@ export class RoomService extends BaseService<Room, CreateRoomDto, UpdateRoomDto>
         ...room,
         address: {
           update: address
-        }
+        },
+        photos: this.upsert(photos)
       }
     });
   }

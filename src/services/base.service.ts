@@ -38,4 +38,11 @@ export abstract class BaseService<Entity, CreateDto, UpdateDto> {
       where: { id }
     });
   }
+
+  protected upsert(obj: any): { update: any[], create: any[] } {
+    return {
+      update: obj.filter(element => element.id).map(({id, ...data}) => ({ where: { id }, data })),
+      create: obj.filter(element => !element.id)
+    }
+  }
 }

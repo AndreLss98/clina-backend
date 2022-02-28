@@ -1,7 +1,12 @@
 import { Type } from "class-transformer";
 import {
+  ArrayMinSize,
+  IsArray,
+  IsDefined,
+  IsNotEmpty,
   IsOptional,
   IsString,
+  IsUrl,
   ValidateNested
 } from "class-validator";
 
@@ -35,6 +40,16 @@ export class UpdateAddressDto {
   cep: string;
 }
 
+class UpdateRoomPhoto {
+
+  @IsOptional()
+  id: number; 
+
+  @IsNotEmpty()
+  @IsUrl()
+  url: string;
+}
+
 export class UpdateRoomDto {
   @IsOptional()
   @IsString()
@@ -48,4 +63,11 @@ export class UpdateRoomDto {
   @IsOptional()
   @Type(() => UpdateAddressDto)
   address?: UpdateAddressDto;
+
+  @ValidateNested({ each: true })
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(1)
+  @Type(() => UpdateRoomPhoto)
+  photos: UpdateRoomPhoto[];
 }
