@@ -15,7 +15,7 @@ export abstract class BaseController<
     return this._service.getById(id);
   }
 
-  abstract create(body: CreateDto): Promise<Entity>;
+  abstract create(body: CreateDto, req?: any): Promise<Entity>;
 
   abstract update(
     id: number,

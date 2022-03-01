@@ -11,13 +11,15 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   name      String
-  email     String    @unique
+  email     String     @unique
   password  String
   avatar    String
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @default(now())
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @default(now())
+  schedules Schedule[]
+  rooms     Room[]
 }
 
 model Room {
@@ -29,6 +31,8 @@ model Room {
   address     Address?
   photos      RoomPhoto[]
   schedules   Schedule[]
+  User        User?       @relation(fields: [userId], references: [id])
+  userId      Int?
 }
 
 model Address {
@@ -56,18 +60,27 @@ model RoomPhoto {
 }
 
 model Schedule {
-  id        Int          @id @default(autoincrement())
-  period    ScheduleType
-  fromDate  DateTime     @db.Date
-  toDate    DateTime     @db.Date
-  createdAt DateTime?    @default(now())
-  updatedAt DateTime?    @updatedAt
-  Room      Room?        @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  roomId    Int?
+  id           Int                  @id @default(autoincrement())
+  period       ScheduleType
+  fromDate     DateTime             @db.Date
+  toDate       DateTime             @db.Date
+  createdAt    DateTime?            @default(now())
+  updatedAt    DateTime?            @updatedAt
+  Room         Room?                @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId       Int?
+  availability ScheduleAvailability @default(RESERVED)
+  User         User?                @relation(fields: [userId], references: [id])
+  userId       Int?
 }
 
 enum ScheduleType {
   MORNING
   AFTERNOON
   NIGHT
+}
+
+enum ScheduleAvailability {
+  AVAILABLE
+  UNAVAILABLE
+  RESERVED
 }

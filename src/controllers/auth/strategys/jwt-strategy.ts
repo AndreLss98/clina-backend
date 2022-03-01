@@ -5,6 +5,11 @@ import { PassportStrategy } from '@nestjs/passport';
 import { jwtConstants } from '../../../shared/contants';
 import { LoginPayload } from '../../../shared/models/login-payload.model';
 
+export interface JwtUser {
+  userId: number;
+  email: string;
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
@@ -15,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(payload: LoginPayload) {
+  async validate(payload: LoginPayload): Promise<JwtUser> {
     return { userId: payload.sub, email: payload.email };
   }
 }

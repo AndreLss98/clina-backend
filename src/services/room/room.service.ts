@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from '../base.service';
 
-import { Room, ScheduleType } from '@prisma/client';
+import { Room, ScheduleAvailability, ScheduleType, User } from '@prisma/client';
 
 import { CreateRoomDto } from '../../controllers/room/dto/create-room.dto';
 import { UpdateRoomDto } from '../../controllers/room/dto/update-room.dto';
 import { PrismaService } from '../../database/prisma/prisma.service';
 import { FilterRoomDto } from '../../controllers/room/dto/filter-room.dto';
 import { enumToArray } from 'src/shared/functions';
+import { JwtUser } from '../../controllers/auth/strategys/jwt-strategy';
 
 @Injectable()
 export class RoomService extends BaseService<
@@ -51,6 +52,9 @@ export class RoomService extends BaseService<
                     period: {
                       equals: type,
                     },
+                    availability: {
+                      not: ScheduleAvailability.UNAVAILABLE,
+                    },
                   },
                 ],
               },
@@ -67,6 +71,9 @@ export class RoomService extends BaseService<
                       period: {
                         equals: type,
                       },
+                      availability: {
+                        not: ScheduleAvailability.UNAVAILABLE,
+                      },
                     },
                   },
                   {
@@ -77,6 +84,9 @@ export class RoomService extends BaseService<
                     AND: {
                       period: {
                         equals: type,
+                      },
+                      availability: {
+                        not: ScheduleAvailability.UNAVAILABLE,
                       },
                     },
                   },
@@ -115,10 +125,10 @@ export class RoomService extends BaseService<
     });
   }
 
-  create(body: CreateRoomDto): Promise<Room> {
+  create(body: CreateRoomDto, user: JwtUser): Promise<Room> {
     const { address, photos, ...room } = body;
-    return this._repo.create({
-      data: {
+    return super.create(
+      {
         ...room,
         address: {
           create: address,
@@ -127,7 +137,8 @@ export class RoomService extends BaseService<
           create: photos,
         },
       },
-    });
+      user,
+    );
   }
 
   update(id: number, body: UpdateRoomDto): Promise<Room> {

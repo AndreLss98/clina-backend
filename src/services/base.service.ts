@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { JwtUser } from '../controllers/auth/strategys/jwt-strategy';
 import { PrismaService } from './../database/prisma/prisma.service';
 
 export abstract class BaseService<Entity, CreateDto, UpdateDto> {
@@ -22,9 +23,12 @@ export abstract class BaseService<Entity, CreateDto, UpdateDto> {
       where: { id }
     });
   };
-  create(body: CreateDto): Promise<Entity> {
-    return this._repo.create({  
-      data: body
+  create(body: CreateDto | any, user?: JwtUser): Promise<Entity> {
+    return this._repo.create({
+      data: {
+        ...body,
+        ...(user && { userId: user.userId })
+      }
     });
   }
   update(id: number, body: UpdateDto): Promise<Entity> {

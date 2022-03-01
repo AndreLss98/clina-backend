@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { Room } from '@prisma/client';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { RoomService } from '../../services/room/room.service';
@@ -34,9 +34,11 @@ export class RoomController extends BaseController<Room, RoomService, CreateRoom
 
   @Post()
   create(
-    @Body() body: CreateRoomDto
+    @Body() body: CreateRoomDto,
+    @Request()
+    req
   ): Promise<Room> {
-    return this._service.create(body);
+    return this._service.create(body, req.user);
   }
 
   @Patch(":id")

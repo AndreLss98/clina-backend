@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
-import { Schedule } from '@prisma/client';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import { Schedule, ScheduleAvailability } from '@prisma/client';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { ScheduleService } from '../../services/schedule/schedule.service';
 import { BaseController } from '../base.controller';
@@ -30,15 +30,17 @@ export class ScheduleController extends BaseController<
     @Param('roomId', ParseIntPipe)
     roomId: number
   ): Promise<Schedule[]> {
-    return this._service.findAll({ roomId });
+    return this._service.findAll({ roomId, availability: [ScheduleAvailability.AVAILABLE, ScheduleAvailability.RESERVED] });
   }
 
   @Post()
   create(
     @Body()
-    body: CreateScheduleDto
+    body: CreateScheduleDto,
+    @Request()
+    req
   ): Promise<Schedule> {
-    return this._service.create(body);
+    return this._service.create(body, req.user);
   }
 
   @Patch(":id")
@@ -48,7 +50,7 @@ export class ScheduleController extends BaseController<
     @Body()
     body: UpdateScheduleDto
   ): Promise<Schedule> {
-    throw new Error('Method not implemented.');
+    return this._service.update(id, body);
   }
 
   @Delete(":id")
@@ -56,6 +58,6 @@ export class ScheduleController extends BaseController<
     @Param('id', ParseIntPipe)
     id: number
   ): Promise<Schedule> {
-    throw new Error('Method not implemented.');
+    return this._service.delete(id);
   }
 }

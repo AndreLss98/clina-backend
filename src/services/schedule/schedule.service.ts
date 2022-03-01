@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaClient, Schedule } from '@prisma/client';
+import { PrismaClient, Schedule, ScheduleAvailability } from '@prisma/client';
 import { FilterScheduleDto } from '../../controllers/schedule/dto/filter-schedules.dto';
 import { PrismaService } from '../../database/prisma/prisma.service';
 import { CreateScheduleDto } from '../../controllers/schedule/dto/create-schedule.dto';
 import { UpdateScheduleDto } from '../../controllers/schedule/dto/update-schedule.dto';
 import { BaseService } from '../base.service';
 import { RoomService } from '../room/room.service';
+import { JwtUser } from '../../controllers/auth/strategys/jwt-strategy';
 
 @Injectable()
 export class ScheduleService extends BaseService<
@@ -32,25 +33,42 @@ export class ScheduleService extends BaseService<
     this._repo = prisma.schedule;
   }
 
-  findAll(filters?: FilterScheduleDto): Promise<Schedule[]> {
+  findAll(filters: FilterScheduleDto = {}): Promise<Schedule[]> {
+    const { availability, ...rest } = filters;
     const filter = {
       where: {
-        ...filters,
+        ...rest,
+        ...(availability && {
+          availability: {
+            in: availability
+          }
+        })
       },
     };
 
     return super.findAll(filter);
   }
 
-  async create(body: CreateScheduleDto): Promise<Schedule> {
+  async create(body: CreateScheduleDto, user: JwtUser): Promise<Schedule> {
     const { roomId, fromDate, toDate, period } = body;
 
-    const results = await this._roomService.findAll(
+    const roomsAvailable = await this._roomService.findAll(
       { id: roomId, fromDate, toDate, dailyPeriod: period  }
     );
 
-    if (!results.length) throw new HttpException('No vacancies for the requested period', HttpStatus.BAD_REQUEST);
+    if (!roomsAvailable.length) throw new HttpException('No vacancies in this room for the requested period', HttpStatus.BAD_REQUEST);
 
-    return super.create(body);
+    return super.create(body, user);
+  }
+
+  delete(id: number): Promise<Schedule> {
+    return this._repo.update({
+      where: {
+        id,
+      },
+      data: {
+        availability: ScheduleAvailability.UNAVAILABLE
+      }
+    })
   }
 }
