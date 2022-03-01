@@ -9,9 +9,11 @@ export abstract class BaseController<
   constructor(
     protected readonly _service: Service
   ) {}
-  abstract getAll(): Promise<Entity[]>;
+  abstract getAll(filters?: any): Promise<Entity[]>;
 
-  abstract getById(id: number): Promise<Entity>;
+  getById(id: number): Promise<Entity> {
+    return this._service.getById(id);
+  }
 
   abstract create(body: CreateDto): Promise<Entity>;
 

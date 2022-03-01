@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { Room } from '@prisma/client';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { RoomService } from '../../services/room/room.service';
 import { BaseController } from '../base.controller';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+import { FilterRoomDto } from './dto/filter-room.dto';
 
 @Controller('room')
 @UseGuards(JwtAuthGuard)
@@ -16,8 +17,11 @@ export class RoomController extends BaseController<Room, RoomService, CreateRoom
   }
 
   @Get()
-  getAll(): Promise<Room[]> {
-    return this._service.findAll()
+  getAll(
+    @Query()
+    filters: FilterRoomDto
+  ): Promise<Room[]> {
+    return this._service.findAll(filters)
   }
 
   @Get(":id")
@@ -32,7 +36,6 @@ export class RoomController extends BaseController<Room, RoomService, CreateRoom
   create(
     @Body() body: CreateRoomDto
   ): Promise<Room> {
-    console.log(body)
     return this._service.create(body);
   }
 

@@ -13,8 +13,8 @@ export abstract class BaseService<Entity, CreateDto, UpdateDto> {
     });
   }
 
-  findAll(): Promise<Entity[]> {
-    return this._repo.findMany();
+  findAll(filters?: any): Promise<Entity[]> {
+    return this._repo.findMany(filters);
   };
 
   getById(id: number): Promise<Entity> {
