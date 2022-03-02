@@ -14,7 +14,7 @@ export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto>
   ) {
     super(prisma);
     this.prisma.$use(async (params, next) => {
-      if (params.action == 'create')
+      if (['create', 'upsert'].includes(params.action))
         params.args.data.password = await hash(params.args.data.password, 10)
       
       return await next(params);
