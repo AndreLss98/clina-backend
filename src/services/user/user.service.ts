@@ -23,6 +23,13 @@ export class UserService extends BaseService<User, CreateUserDto, UpdateUserDto>
     this._repo = prisma.user;
   }
 
+  getById(id: number, include?: any): Promise<User> {
+    return super.getById(id, {
+      schedules: true,
+      rooms: true,
+    });
+  }
+
   getByEmail(email: string): Promise<User> {
     return this._repo.findFirst({
       where: { email }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { Schedule, ScheduleAvailability } from '@prisma/client';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { ScheduleService } from '../../services/schedule/schedule.service';
@@ -50,7 +50,7 @@ export class ScheduleController extends BaseController<
     @Body()
     body: UpdateScheduleDto
   ): Promise<Schedule> {
-    return this._service.update(id, body);
+    throw new HttpException("Method Not Allowed", HttpStatus.METHOD_NOT_ALLOWED);
   }
 
   @Delete(":id")

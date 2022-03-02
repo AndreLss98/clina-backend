@@ -22,6 +22,7 @@ async function seedDb() {
       name: 'Burj Khalifa',
       description:
         'Aenean finibus semper erat, sed varius neque lobortis non. Phasellus sit amet ligula egestas, condimentum enim sed, mollis justo. Vivamus sit amet feugiat sapien. Maecenas non justo id ipsum egestas dignissim. Nam consequat porttitor velit. Etiam et enim ac dui semper scelerisque. Cras mollis massa iaculis molestie bibendum.',
+      userId: defaultUser.id,
       address: {
         create: {
           address: 'Rua São Salvador 625',
