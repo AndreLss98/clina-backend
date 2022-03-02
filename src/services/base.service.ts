@@ -18,9 +18,12 @@ export abstract class BaseService<Entity, CreateDto, UpdateDto> {
     return this._repo.findMany(filters);
   };
 
-  getById(id: number): Promise<Entity> {
+  getById(id: number, include?: any): Promise<Entity> {
     return this._repo.findUnique({
-      where: { id }
+      where: { id },
+      ...(include && {
+        include
+      })
     });
   };
   create(body: CreateDto | any, user?: JwtUser): Promise<Entity> {
@@ -31,7 +34,7 @@ export abstract class BaseService<Entity, CreateDto, UpdateDto> {
       }
     });
   }
-  update(id: number, body: UpdateDto): Promise<Entity> {
+  update(id: number, body: UpdateDto | any): Promise<Entity> {
     return this._repo.update({
       where: { id },
       data: body

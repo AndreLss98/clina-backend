@@ -24,7 +24,7 @@ export class RoomService extends BaseService<
 
   findAll(filters: FilterRoomDto): Promise<Room[]> {
     const { date, name, fromDate, toDate, dailyPeriod, ...rest } = filters;
-    
+
     const generateFilter = (type) => ({
       where: {
         ...rest,
@@ -115,13 +115,10 @@ export class RoomService extends BaseService<
   }
 
   getById(id: number): Promise<Room> {
-    return this._repo.findUnique({
-      where: { id },
-      include: {
-        address: true,
-        photos: true,
-        schedules: true,
-      },
+    return super.getById(id, {
+      address: true,
+      photos: true,
+      schedules: true,
     });
   }
 
@@ -143,16 +140,16 @@ export class RoomService extends BaseService<
 
   update(id: number, body: UpdateRoomDto): Promise<Room> {
     const { address, photos, ...room } = body;
-
-    return this._repo.update({
-      where: { id },
-      data: {
-        ...room,
+    return super.update(id, {
+      ...room,
+      ...(address && {
         address: {
           update: address,
-        },
+        }
+      }),
+      ...(photos && {
         photos: this.upsert(photos),
-      },
+      })
     });
   }
 }
